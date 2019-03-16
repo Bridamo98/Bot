@@ -18,10 +18,34 @@ public BotParser(TokenStream input, Bot bot) {
 }
 program
 :
-	(create_var|assingnation)//|if_statement|while_statement|def_function|call_function|read_statement|write_statement)*
+	(up{bot.up(up().value);}|down{bot.down(down().value);}|left{bot.left(left().value);}|right{bot.right(right().value);})+
+	//create_var|assignation|if_statement|while_statement|def_function|call_function|read_statement|write_statement)*
 
 ;
-
+up returns [Integer value]
+:
+	UP
+	INTEGER{$value=Integer.parseInt($INTEGER().getText());}
+	SEMICOLON
+;
+down returns [Integer value]
+:
+	DOWN
+	INTEGER{$value=Integer.parseInt($INTEGER().getText());}
+	SEMICOLON
+;
+left returns [Integer value]
+:
+	LEFT
+	INTEGER{$value=Integer.parseInt($INTEGER().getText());}
+	SEMICOLON
+;
+right returns [Integer value]
+:
+	RIGHT
+	INTEGER{$value=Integer.parseInt($INTEGER().getText());}
+	SEMICOLON
+;
 create_var
 :
 	LET ID SEMICOLON | (LET ID EQUAL (arit_expre_plus | STRING) SEMICOLON)
