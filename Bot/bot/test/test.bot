@@ -1,4 +1,1 @@
-down 8;
-right 4;
-left 2;
-up 6;
+writeln (2+2);

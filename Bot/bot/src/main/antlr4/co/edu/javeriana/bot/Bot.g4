@@ -177,30 +177,29 @@ public BotParser(TokenStream input, Bot bot) {
 
 program: statement*;
 
-statement: command|create_var;
-//----------------------------
+statement: command|create_var|writeln;
+//$arit_expre_plus.value
+writeln
+:
+	WRITELN arit_expre_plus SEMICOLON
+	{System.out.println($arit_expre_plus.value);}
+;
 create_var
 :
 	LET ID SEMICOLON | (LET ID EQUAL (arit_expre_plus | STRING) SEMICOLON)
 ;
 
-arit_expre_plus
+arit_expre_plus returns[Object value]
 :
-	arit_expre_mult((PLUS|MINUS) arit_expre_mult)*
+	t1=arit_expre_mult{$value =(double)$t1.value;}((PLUS t2=arit_expre_mult{$value =(double)$value+(double)$t2.value;}|MINUS arit_expre_mult) )*
 ;
-operator
+arit_expre_mult returns [Object value] 
 :
-	(MINUS)?
+	t1=term{$value=(double)$term.value;}((MULT t2=term{$value=(double)$value*(double)$t2.value;}|DIV term))*
 ;
-
-
-arit_expre_mult 
+term returns [Object value]
 :
-	term((MULT|DIV) term)*
-;
-term
-:
-	MINUS?(INTEGER|FLOAT)	| PAR_O arit_expre_plus PAR_C
+	(MINUS t1=INTEGER{$value=-1.0*Double.parseDouble($t1.text);}|t2=INTEGER{$value=Double.parseDouble($t2.text);}|MINUS t3=FLOAT{$value=-1.0*Double.parseDouble($t3.text);}|t3=FLOAT{$value=Double.parseDouble($t3.text);}) | PAR_O arit_expre_plus PAR_C
 ;
 //---------------------------------
 command: up|down|left|right;
