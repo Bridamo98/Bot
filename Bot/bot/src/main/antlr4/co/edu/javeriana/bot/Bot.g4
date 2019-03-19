@@ -177,8 +177,32 @@ public BotParser(TokenStream input, Bot bot) {
 
 program: statement*;
 
-statement: command;
+statement: command|create_var;
+//----------------------------
+create_var
+:
+	LET ID SEMICOLON | (LET ID EQUAL (arit_expre_plus | STRING) SEMICOLON)
+;
 
+arit_expre_plus
+:
+	arit_expre_mult((PLUS|MINUS) arit_expre_mult)*
+;
+operator
+:
+	(MINUS)?
+;
+
+
+arit_expre_mult 
+:
+	term((MULT|DIV) term)*
+;
+term
+:
+	MINUS?(INTEGER|FLOAT)	| PAR_O arit_expre_plus PAR_C
+;
+//---------------------------------
 command: up|down|left|right;
 
 up: UP  number
