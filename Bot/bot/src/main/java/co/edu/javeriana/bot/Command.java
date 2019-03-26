@@ -2,19 +2,13 @@ package co.edu.javeriana.bot;
 
 import java.util.Map;
 
-public class Number implements ASTNode {
+public class Command implements ASTNode {
 
 	
-
-	Object value;
-	public Number(Object value) {
-		super();
-		this.value = value;
-	}
 	@Override
 	public Object execute(Map<String,Object> symbolTable) {
 		// TODO Auto-generated method stub
-		return value;
+		return null;
 	}
 
 }

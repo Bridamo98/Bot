@@ -1,5 +1,7 @@
 package co.edu.javeriana.bot;
 
+import java.util.Map;
+
 import org.jpavlich.bot.Bot;
 
 public class Down implements ASTNode {
@@ -12,8 +14,8 @@ public class Down implements ASTNode {
 		this.bot = bot;
 	}
 	@Override
-	public Object execute() {
-		((Bot)bot).down((int)number.execute());
+	public Object execute(Map<String,Object> symbolTable) {
+		((Bot)bot).down((int)number.execute(symbolTable));
 		return null;
 	}
 

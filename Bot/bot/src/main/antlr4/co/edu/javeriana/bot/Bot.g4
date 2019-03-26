@@ -161,7 +161,8 @@ WS
 @header {
 
 import org.jpavlich.bot.*;
-
+import java.util.HashMap;
+import java.util.Map;
 }
 
 @parser::members {
@@ -175,61 +176,79 @@ public BotParser(TokenStream input, Bot bot) {
 
 }
 
-program: statement*;
+program:
+{
+	List<ASTNode> body =new ArrayList<ASTNode>();
+	Map<String,Object> symbolTable = new HashMap<String, Object>();		
+} 
+(statement{body.add($statement.node);})*
+{
+	for(ASTNode n: body){
+		n.execute(symbolTable);
+	}
+}
+;
 
-statement: command|create_var|writeln;
+statement returns [ASTNode node]: t1=command{$node=$t1.node;}|t2=create_var{$node=$t2.node;}|assign|writeln;
 //$arit_expre_plus.value
 writeln
 :
 	WRITELN arit_expre_plus SEMICOLON
 	{System.out.println($arit_expre_plus.value);}
 ;
-create_var
+assign returns [ASTNode node]
 :
-	LET ID SEMICOLON | (LET ID EQUAL (arit_expre_plus | STRING) SEMICOLON)
+	ID EQUAL expression SEMICOLON
 ;
-
+create_var returns [ASTNode node] 
+:
+	LET ID{$node=new CreateVar($ID.text);} SEMICOLON
+;
+expression returns [ASTNode node]
+:
+	(arit_expre_plus|BOOL|STRING){}
+;
 arit_expre_plus returns[Object value]
 :
 	t1=arit_expre_mult{$value =(double)$t1.value;}
 	((PLUS t2=arit_expre_mult{$value =(double)$value+(double)$t2.value;}|MINUS arit_expre_mult) )*
 ;
 
-arit_expre_mult returns [Object value] 
+arit_expre_mult returns [ASTNode node] 
 :
-	t1=term{$value=(double)$term.value;}((MULT t2=term{$value=(double)$value*(double)$t2.value;}|DIV term))*
+	t1=term{$node=(double)$t1.node;}((MULT t2=term{$node=new AritExpreMult($node,$t2.node,true);}|DIV t3=term{$node=new AritExpreMult($node,$t3.node,false);}))*
 ;
 
-term returns [Object value]
+term returns [ASTNode node]
 :
-	(MINUS t1=INTEGER{$value=-1.0*Double.parseDouble($t1.text);System.out.println($t1.text);}|
-		t2=INTEGER{$value=Double.parseDouble($t2.text);System.out.println($t2.text);}|
-		MINUS t3=FLOAT{$value=-1.0*Double.parseDouble($t3.text);System.out.println($t3.text);}|
-		t4=FLOAT{$value=Double.parseDouble($t4.text);System.out.println($t4.text);})|
-		PAR_O arit_expre_plus {$value=$arit_expre_plus.value;}PAR_C
+	(MINUS t1=INTEGER{$node=-new Term(1.0*Double.parseDouble($t1.text));System.out.println($t1.text);}|
+		t2=INTEGER{$node=new Term(Double.parseDouble($t2.text));System.out.println($t2.text);}|
+		MINUS t3=FLOAT{$node=new Term(-1.0*Double.parseDouble($t3.text));System.out.println($t3.text);}|
+		t4=FLOAT{$node=new Term(Double.parseDouble($t4.text));System.out.println($t4.text);})|
+		PAR_O arit_expre_plus {$node=new Term($arit_expre_plus.value);}PAR_C
 ;
 
 //---------------------------------
-command: up |down|left|right;
+command returns [ASTNode node]: (t1=up{$node=$t1.node;} |t2=down{$node=$t2.node;}|t3=left{$node=$t3.node;}|t4=right{$node=$t4.node;});
 
-up: UP  number
+up returns [ASTNode node]: UP  number
 	{
-		{new Up($number.node,bot).execute();}	
+		{$node=new Up($number.node,bot);}	
 	}
 	SEMICOLON;
-down: DOWN number
+down returns [ASTNode node]: DOWN number
 	{	
-		{new Down($number.node,bot).execute();}	
+		{$node=new Down($number.node,bot);}	
 	}
 	SEMICOLON;
-left:LEFT number
+left returns [ASTNode node]:LEFT number
 	{
-		{new Left($number.node,bot).execute();}	
+		{$node=new Left($number.node,bot);}	
 	}
 	SEMICOLON;
-right: RIGHT number
+right returns [ASTNode node]: RIGHT number
 	{
-		{new Right($number.node,bot).execute();}	
+		{$node=new Right($number.node,bot);}	
 	}
 	SEMICOLON;
 
