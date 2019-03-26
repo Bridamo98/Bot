@@ -191,42 +191,50 @@ create_var
 
 arit_expre_plus returns[Object value]
 :
-	t1=arit_expre_mult{$value =(double)$t1.value;}((PLUS t2=arit_expre_mult{$value =(double)$value+(double)$t2.value;}|MINUS arit_expre_mult) )*
+	t1=arit_expre_mult{$value =(double)$t1.value;}
+	((PLUS t2=arit_expre_mult{$value =(double)$value+(double)$t2.value;}|MINUS arit_expre_mult) )*
 ;
+
 arit_expre_mult returns [Object value] 
 :
 	t1=term{$value=(double)$term.value;}((MULT t2=term{$value=(double)$value*(double)$t2.value;}|DIV term))*
 ;
+
 term returns [Object value]
 :
-	(MINUS t1=INTEGER{$value=-1.0*Double.parseDouble($t1.text);}|t2=INTEGER{$value=Double.parseDouble($t2.text);}|MINUS t3=FLOAT{$value=-1.0*Double.parseDouble($t3.text);}|t3=FLOAT{$value=Double.parseDouble($t3.text);}) | PAR_O arit_expre_plus PAR_C
+	(MINUS t1=INTEGER{$value=-1.0*Double.parseDouble($t1.text);System.out.println($t1.text);}|
+		t2=INTEGER{$value=Double.parseDouble($t2.text);System.out.println($t2.text);}|
+		MINUS t3=FLOAT{$value=-1.0*Double.parseDouble($t3.text);System.out.println($t3.text);}|
+		t4=FLOAT{$value=Double.parseDouble($t4.text);System.out.println($t4.text);})|
+		PAR_O arit_expre_plus {$value=$arit_expre_plus.value;}PAR_C
 ;
+
 //---------------------------------
-command: up|down|left|right;
+command: up |down|left|right;
 
 up: UP  number
 	{
-		bot.up($number.valor);	
+		{new Up($number.node,bot).execute();}	
 	}
 	SEMICOLON;
 down: DOWN number
-	{
-		bot.down($number.valor);	
+	{	
+		{new Down($number.node,bot).execute();}	
 	}
 	SEMICOLON;
-left: LEFT number
+left:LEFT number
 	{
-		bot.left($number.valor);	
+		{new Left($number.node,bot).execute();}	
 	}
 	SEMICOLON;
 right: RIGHT number
 	{
-		bot.right($number.valor);	
+		{new Right($number.node,bot).execute();}	
 	}
 	SEMICOLON;
 
-number returns [int valor]:
-	INTEGER {$valor = Integer.parseInt($INTEGER.text);};
+number returns [ASTNode node]:
+	t1=INTEGER {$node=new Number(Integer.parseInt($t1.text));};
 
 
 
@@ -278,7 +286,7 @@ ID: ('_'|[a-z]|[A-Z])('_'|[a-z]|[A-Z]|[0-9])*;
 
 
 
-FLOAT: ['0'..'9']+'.'[0-9]+;
+FLOAT: [0-9]+'.'([0-9])+;
 BOOL: 'true'|'false';
 STRING: '"'.*?'"';
 INTEGER: [0-9]+;
