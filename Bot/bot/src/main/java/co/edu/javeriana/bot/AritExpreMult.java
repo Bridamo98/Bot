@@ -17,8 +17,12 @@ public class AritExpreMult implements ASTNode {
 
 	@Override
 	public Object execute(Map<String, Object> symbolTable) {
-		// TODO Auto-generated method stub
-		return null;
+		if(op){
+			return (Object)((Double)op1.execute(symbolTable)*(Double)op2.execute(symbolTable));
+		}else{
+			return (Object)((Double)op1.execute(symbolTable)/(Double)op2.execute(symbolTable));
+		}
+		
 	}
 
 }

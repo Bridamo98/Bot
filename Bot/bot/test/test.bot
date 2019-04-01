@@ -1,2 +1,3 @@
 down 3;
 right 6;
+writeln -1*(-2+(2/-3));

@@ -14,7 +14,6 @@ public class Up implements ASTNode {
 		this.number = number;
 		this.bot = bot;
 	}
-	
 	@Override
 	public Object execute(Map<String,Object> symbolTable) {
 		((Bot)bot).up((int)number.execute(symbolTable));

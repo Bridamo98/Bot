@@ -5,14 +5,20 @@ import java.util.Map;
 public class Term implements ASTNode {
 
 	Object value;
-	public Term(Object value) {
+	Boolean termino;
+	public Term(Object value, Boolean termino) {
 		super();
 		this.value = value;
+		this.termino=termino;
 	}
 	@Override
 	public Object execute(Map<String, Object> symbolTable) {
-		// TODO Auto-generated method stub
-		return value;
+		if(termino){
+			return ((ASTNode)value).execute(symbolTable);
+		}else{
+			return value;
+		}
+		
 	}
 	
 	

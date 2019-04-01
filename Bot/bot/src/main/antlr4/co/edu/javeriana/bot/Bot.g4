@@ -189,43 +189,45 @@ program:
 }
 ;
 
-statement returns [ASTNode node]: t1=command{$node=$t1.node;}|t2=create_var{$node=$t2.node;}|assign|writeln;
+statement returns [ASTNode node]: t1=command{$node=$t1.node;}|t2=create_var{$node=$t2.node;}|assign|writeln{$node=$writeln.node;};
 //$arit_expre_plus.value
-writeln
+writeln  returns[ASTNode node]
 :
-	WRITELN arit_expre_plus SEMICOLON
-	{System.out.println($arit_expre_plus.value);}
+	WRITELN (arit_expre_plus{$node=new Writeln($arit_expre_plus.node);}) SEMICOLON//QUEREMOS IMPRIMIR VARIABLES--------------------
+	//{System.out.println($arit_expre_plus.node);}
 ;
-assign returns [ASTNode node]
+assign returns [ASTNode node]//noooo
 :
-	ID EQUAL expression SEMICOLON
+	ID EQUAL expression{$node=$expression.node} SEMICOLON
 ;
-create_var returns [ASTNode node] 
+create_var returns [ASTNode node] //tampocoooo
 :
 	LET ID{$node=new CreateVar($ID.text);} SEMICOLON
 ;
 expression returns [ASTNode node]
 :
-	(arit_expre_plus|BOOL|STRING){}
+	(arit_expre_plus){$node=$arit_expre_plus.node;}
 ;
-arit_expre_plus returns[Object value]
+arit_expre_plus returns[ASTNode node]
 :
-	t1=arit_expre_mult{$value =(double)$t1.value;}
-	((PLUS t2=arit_expre_mult{$value =(double)$value+(double)$t2.value;}|MINUS arit_expre_mult) )*
+	t1=arit_expre_mult{$node =$t1.node;}
+	((PLUS t2=arit_expre_mult{$node =new AritExprePlus($node,$t2.node);}|MINUS arit_expre_mult) )*
 ;
 
 arit_expre_mult returns [ASTNode node] 
 :
-	t1=term{$node=(double)$t1.node;}((MULT t2=term{$node=new AritExpreMult($node,$t2.node,true);}|DIV t3=term{$node=new AritExpreMult($node,$t3.node,false);}))*
+	t1=term{$node=$t1.node;}((MULT t2=term{$node=new AritExpreMult($node,$t2.node,true);}|DIV t3=term{$node=new AritExpreMult($node,$t3.node,false);}))*
 ;
 
 term returns [ASTNode node]
 :
-	(MINUS t1=INTEGER{$node=-new Term(1.0*Double.parseDouble($t1.text));System.out.println($t1.text);}|
-		t2=INTEGER{$node=new Term(Double.parseDouble($t2.text));System.out.println($t2.text);}|
-		MINUS t3=FLOAT{$node=new Term(-1.0*Double.parseDouble($t3.text));System.out.println($t3.text);}|
-		t4=FLOAT{$node=new Term(Double.parseDouble($t4.text));System.out.println($t4.text);})|
-		PAR_O arit_expre_plus {$node=new Term($arit_expre_plus.value);}PAR_C
+
+	(MINUS t1=INTEGER{$node=new Term(-1.0*Double.parseDouble($t1.text),false);System.out.println($t1.text);}|
+		t2=INTEGER{$node=new Term(Double.parseDouble($t2.text),false);System.out.println($t2.text);}|
+		MINUS t3=FLOAT{$node=new Term(-1.0*Double.parseDouble($t3.text),false);System.out.println($t3.text);}|
+		t4=FLOAT{$node=new Term(Double.parseDouble($t4.text),false);System.out.println($t4.text);})|
+		PAR_O arit_expre_plus {$node=new Term($arit_expre_plus.node,true);}PAR_C
+		
 ;
 
 //---------------------------------
