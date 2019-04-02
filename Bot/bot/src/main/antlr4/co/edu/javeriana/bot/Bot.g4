@@ -198,7 +198,7 @@ writeln  returns[ASTNode node]
 ;
 assign returns [ASTNode node]//noooo
 :
-	ID EQUAL expression{$node=$expression.node} SEMICOLON
+	ID EQUAL expression{$node=$expression.node;} SEMICOLON
 ;
 create_var returns [ASTNode node] //tampocoooo
 :
@@ -222,7 +222,7 @@ arit_expre_mult returns [ASTNode node]
 term returns [ASTNode node]
 :
 
-	(MINUS t1=INTEGER{$node=new Term(-1.0*Double.parseDouble($t1.text),false);System.out.println($t1.text);}|
+	(ID{$node=new Id($ID.text);}|MINUS t1=INTEGER{$node=new Term(-1.0*Double.parseDouble($t1.text),false);System.out.println($t1.text);}|
 		t2=INTEGER{$node=new Term(Double.parseDouble($t2.text),false);System.out.println($t2.text);}|
 		MINUS t3=FLOAT{$node=new Term(-1.0*Double.parseDouble($t3.text),false);System.out.println($t3.text);}|
 		t4=FLOAT{$node=new Term(Double.parseDouble($t4.text),false);System.out.println($t4.text);})|
