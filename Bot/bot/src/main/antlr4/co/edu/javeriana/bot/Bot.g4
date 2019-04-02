@@ -194,20 +194,30 @@ statement returns [ASTNode node]: t1=command{$node=$t1.node;}|t2=create_var{$nod
 writeln  returns[ASTNode node]
 :
 	WRITELN (arit_expre_plus{$node=new Writeln($arit_expre_plus.node);}) SEMICOLON//QUEREMOS IMPRIMIR VARIABLES--------------------
+	|WRITELN (ID{$node=new Writeln(new Id($ID.text));})
 	//{System.out.println($arit_expre_plus.node);}
 	// 
 ;
-assign returns [ASTNode node]//noooo
+bool returns [ASTNode node]
 :
-	ID EQUAL expression{$node=new Assign($expression.node,$ID.text);} SEMICOLON
+	BOOL {$node=new BooleanManager(Boolean.parseBoolean($BOOL.text));}
 ;
-create_var returns [ASTNode node] //tampocoooo
+
+assign returns [ASTNode node]
+:
+	t1=ID EQUAL expression{$node=new Assign($expression.node,$t1.text);} SEMICOLON
+;
+
+
+create_var returns [ASTNode node]
 :
 	LET ID{$node=new CreateVar($ID.text);} SEMICOLON
 ;
 expression returns [ASTNode node]
 :
-	(arit_expre_plus){$node=$arit_expre_plus.node;}
+	(arit_expre_plus){$node=$arit_expre_plus.node;}|
+	
+	(bool){$node=$bool.node;}
 ;
 arit_expre_plus returns[ASTNode node]
 :
@@ -223,14 +233,26 @@ arit_expre_mult returns [ASTNode node]
 term returns [ASTNode node]
 :
 
-	(ID{$node=new Id($ID.text);}|MINUS t1=INTEGER{$node=new Term(-1.0*Double.parseDouble($t1.text),false);System.out.println($t1.text);}|
-		t2=INTEGER{$node=new Term(Double.parseDouble($t2.text),false);System.out.println($t2.text);}|
-		MINUS t3=FLOAT{$node=new Term(-1.0*Double.parseDouble($t3.text),false);System.out.println($t3.text);}|
-		t4=FLOAT{$node=new Term(Double.parseDouble($t4.text),false);System.out.println($t4.text);})|
+	(ID{$node=new Id($ID.text);}|MINUS t1=INTEGER{$node=new Term(-1.0*Double.parseDouble($t1.text),false);}|
+		t2=INTEGER{$node=new Term(Double.parseDouble($t2.text),false);}|
+		MINUS t3=FLOAT{$node=new Term(-1.0*Double.parseDouble($t3.text),false);}|
+		t4=FLOAT{$node=new Term(Double.parseDouble($t4.text),false);})|
 		PAR_O arit_expre_plus {$node=new Term($arit_expre_plus.node,true);}PAR_C
 		
 ;
+conditional: IF PAR_O expression PAR_C
+	BRACKET_O 
+	statement*
+	BRACKET_C
+	(ELSE
+	BRACKET_O
+	statement*
+	BRACKET_C
+	)?
+;
 
+ 
+	
 //---------------------------------
 command returns [ASTNode node]: (t1=up{$node=$t1.node;} |t2=down{$node=$t2.node;}|t3=left{$node=$t3.node;}|t4=right{$node=$t4.node;});
 
@@ -273,6 +295,7 @@ LOOK: 'look';
 
 LET: 'let';
 IF: 'if';
+ELSE: 'else';
 WHILE: 'while';
 READ: 'read';
 WRITELN: 'writeln';
@@ -303,16 +326,16 @@ BRACKET_O: '{';
 BRACKET_C: '}';
 SBRACKET_O: '[';
 SBRACKET_C: ']';
+BOOL: 'true'|'false';
 
-ID: ('_'|[a-z]|[A-Z])('_'|[a-z]|[A-Z]|[0-9])*;
 
 
 
 FLOAT: [0-9]+'.'([0-9])+;
-BOOL: 'true'|'false';
+
 STRING: '"'.*?'"';
 INTEGER: [0-9]+;
-
+ID: ('_'|[a-z]|[A-Z])('_'|[a-z]|[A-Z]|[0-9])*;
 WS
 :
 	[ \t\r\n]+ -> skip

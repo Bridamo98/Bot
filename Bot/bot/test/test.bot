@@ -1,4 +1,4 @@
 
 let y;
-y=456;
+y=true;
 writeln y;

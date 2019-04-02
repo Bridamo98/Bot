@@ -2,18 +2,16 @@ package co.edu.javeriana.bot;
 
 import java.util.Map;
 
-public class Id implements ASTNode {
-
-	
-
-	String name;
-	public Id(String name) {
+public class BooleanManager implements ASTNode {
+	Object value;
+	BooleanManager (Object valor)
+	{
 		super();
-		this.name = name;
+		this.value=valor;
 	}
 	@Override
 	public Object execute(Map<String, Object> symbolTable) {
-		return symbolTable.get(name);
+		return value;
 	}
 
 }
