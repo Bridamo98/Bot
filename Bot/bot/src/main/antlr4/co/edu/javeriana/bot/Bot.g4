@@ -189,16 +189,17 @@ program:
 }
 ;
 
-statement returns [ASTNode node]: t1=command{$node=$t1.node;}|t2=create_var{$node=$t2.node;}|assign|writeln{$node=$writeln.node;};
+statement returns [ASTNode node]: t1=command{$node=$t1.node;}|t2=create_var{$node=$t2.node;}|t40=assign{$node=$t40.node;}|writeln{$node=$writeln.node;};
 //$arit_expre_plus.value
 writeln  returns[ASTNode node]
 :
 	WRITELN (arit_expre_plus{$node=new Writeln($arit_expre_plus.node);}) SEMICOLON//QUEREMOS IMPRIMIR VARIABLES--------------------
 	//{System.out.println($arit_expre_plus.node);}
+	// 
 ;
 assign returns [ASTNode node]//noooo
 :
-	ID EQUAL expression{$node=$expression.node;} SEMICOLON
+	ID EQUAL expression{$node=new Assign($expression.node,$ID.text);} SEMICOLON
 ;
 create_var returns [ASTNode node] //tampocoooo
 :

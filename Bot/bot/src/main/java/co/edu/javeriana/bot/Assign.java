@@ -6,14 +6,13 @@ public class Assign implements ASTNode {
 	
 	ASTNode value;
 	String name;
-	public Assign(ASTNode value, String name) {
+	public Assign(ASTNode valor, String nombre) {
 		super();
-		this.value = value;
-		this.name = name;
+		this.value = valor;
+		this.name = nombre;
 	}
 	@Override
 	public Object execute(Map<String, Object> symbolTable) {
-		
 		symbolTable.put(name,value.execute(symbolTable));
 		return null;
 	}

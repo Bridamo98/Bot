@@ -1,3 +1,4 @@
+
 let y;
-y=1;
-writeln 2;
+y=456;
+writeln y;
