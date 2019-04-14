@@ -1,6 +1,7 @@
 package co.edu.javeriana.bot;
 
 import java.util.Map;
+import java.util.Stack;
 
 import org.jpavlich.bot.Bot;
 
@@ -14,7 +15,7 @@ public class Down implements ASTNode {
 		this.bot = bot;
 	}
 	@Override
-	public Object execute(Map<String,Object> symbolTable) {
+	public Object execute(Stack <Map<String,Object>> symbolTable) {
 		((Bot)bot).down((int)number.execute(symbolTable));
 		return null;
 	}

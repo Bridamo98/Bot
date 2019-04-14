@@ -1,6 +1,7 @@
 package co.edu.javeriana.bot;
 
 import java.util.Map;
+import java.util.Stack;
 
 public class Logical implements ASTNode {
 
@@ -16,7 +17,7 @@ public class Logical implements ASTNode {
 	int type;
 	
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
+	public Object execute(Stack <Map<String,Object>> symbolTable) {
 		if(type==0){
 			return ((Boolean)(op1.execute(symbolTable)) &&(Boolean)(op2.execute(symbolTable)));
 		}

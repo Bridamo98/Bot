@@ -163,6 +163,7 @@ WS
 import org.jpavlich.bot.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 }
 
 @parser::members {
@@ -179,7 +180,9 @@ public BotParser(TokenStream input, Bot bot) {
 program:
 {
 	List<ASTNode> body =new ArrayList<ASTNode>();
-	Map<String,Object> symbolTable = new HashMap<String, Object>();		
+	Map<String,Object> symbolTabl = new HashMap<String, Object>();		
+	Stack < Map <String,Object> > symbolTable= new Stack  < Map<String,Object> >();
+	symbolTable.add(symbolTabl);
 	//TODO: cola de mapas
 } 
 (statement{body.add($statement.node);})*
@@ -208,8 +211,9 @@ decFunction returns [ASTNode node]
 :
 	{
 		List<ASTNode> body=new ArrayList<ASTNode>();
+		
 	}
-	FUNCTION ID PAR_O PAR_C
+	FUNCTION ID PAR_O  PAR_C
 	BEGIN
 		(statement{body.add($statement.node);})*
 	END
@@ -226,7 +230,9 @@ arguments returns[ASTNode node]//despuesito
 writeln  returns[ASTNode node]
 :
 	WRITELN (arit_expre_plus{$node=new Writeln($arit_expre_plus.node);}) SEMICOLON//QUEREMOS IMPRIMIR VARIABLES--------------------
-	|WRITELN (ID{$node=new Writeln(new Id($ID.text));})
+	|WRITELN (ID{$node=new Writeln(new Id($ID.text));} )SEMICOLON
+	|WRITELN logical{$node=new Writeln($logical.node);} SEMICOLON
+		
 	//{System.out.println($arit_expre_plus.node);}
 	// 
 ;
@@ -277,7 +283,7 @@ logicalSub returns [ASTNode node]
 arit_expre_plus returns[ASTNode node]
 :
 	t1=arit_expre_mult{$node =$t1.node;}
-	((PLUS t2=arit_expre_mult{$node =new AritExprePlus($node,$t2.node);}|MINUS arit_expre_mult) )*
+	((PLUS t2=arit_expre_mult{$node =new AritExprePlus($node,$t2.node,true);}|MINUS t3=arit_expre_mult {$node=new AritExprePlus($node,$t3.node,false);}) )*
 ;
 
 arit_expre_mult returns [ASTNode node] 

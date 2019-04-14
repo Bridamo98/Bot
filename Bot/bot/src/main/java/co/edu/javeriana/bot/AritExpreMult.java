@@ -1,6 +1,7 @@
 package co.edu.javeriana.bot;
 
 import java.util.Map;
+import java.util.Stack;
 
 public class AritExpreMult implements ASTNode {
 
@@ -16,7 +17,7 @@ public class AritExpreMult implements ASTNode {
 	}
 
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
+	public Object execute(Stack <Map<String,Object>> symbolTable) {
 		if(op){
 			return (Object)((Double)op1.execute(symbolTable)*(Double)op2.execute(symbolTable));
 		}else{

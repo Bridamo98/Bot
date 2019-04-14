@@ -1,6 +1,7 @@
 package co.edu.javeriana.bot;
 
 import java.util.Map;
+import java.util.Stack;
 
 public class Compare implements ASTNode {
 
@@ -16,7 +17,7 @@ public class Compare implements ASTNode {
 	}
 	
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
+	public Object execute(Stack <Map<String,Object>> symbolTable) {
 		
 		if(type==0){
 			return (Object)((Double)(op1.execute(symbolTable))<(Double)(op2.execute(symbolTable)));

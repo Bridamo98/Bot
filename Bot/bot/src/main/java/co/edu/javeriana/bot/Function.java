@@ -1,7 +1,9 @@
 package co.edu.javeriana.bot;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 public class Function implements ASTNode {
 
@@ -15,15 +17,12 @@ public class Function implements ASTNode {
 	String name;
 	
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
-		
-		//TODO:Aqui se inicializa un mapa nuevo
-		//TODO:Se pone el mapa nuevo en una NUEVA cola; la cola nueva tiene que tener los mismos elementos de la cola anterior + el mapa nuevo
-		
-		
+	public Object execute(Stack <Map<String,Object>> symbolTable) {
+	
 		for(ASTNode n: body){
 			n.execute(symbolTable);//TODO:Se tiene que pasar como parametro la cola NUEVA (como siempre)
 		}
+		symbolTable.pop();
 		return null;
 	}
 

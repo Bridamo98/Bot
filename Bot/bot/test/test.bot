@@ -1,14 +1,31 @@
-function carajo()
-begin
 
-	writeln 777;
+let cont=666;
+if((5/2)<5)
+begin
+	writeln cont;
+	cont=cont+1;
+	let a=9;
+	writeln a;
+	let cont=8;
+	writeln cont;
+	while(cont>0)
+	begin
+		cont=cont-1;
+		writeln cont;
+		if(cont==0)
+		begin
+			writeln a;
+		end
+	end
 	
 end
-function fun()
+else
 begin
-	let u=666;
-	writeln u;
-	carajo();
+	writeln cont;
+	cont=cont+2;
+	let a=19;
+	writeln a;
+	let cont=18;
+	writeln cont;
 end
-
-fun();
+writeln cont;

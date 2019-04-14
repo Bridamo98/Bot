@@ -1,6 +1,7 @@
 package co.edu.javeriana.bot;
 
 import java.util.Map;
+import java.util.Stack;
 
 public class Writeln implements ASTNode {
 
@@ -13,7 +14,7 @@ public class Writeln implements ASTNode {
 	}
 	
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
+	public Object execute(Stack <Map<String,Object>> symbolTable) {
 		System.out.println(value.execute(symbolTable));
 		return null;
 	}

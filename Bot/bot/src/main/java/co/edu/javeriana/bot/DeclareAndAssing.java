@@ -1,6 +1,7 @@
 package co.edu.javeriana.bot;
 
 import java.util.Map;
+import java.util.Stack;
 
 public class DeclareAndAssing implements ASTNode {
 
@@ -14,8 +15,11 @@ public class DeclareAndAssing implements ASTNode {
 	ASTNode value;
 	
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
-		symbolTable.put(name, value.execute(symbolTable));//TODO: poner variable en el primer elemento de la cola (el ultimo que entro)
+	public Object execute(Stack <Map<String,Object>> symbolTable) {
+		
+		Map<String,Object> mapa= symbolTable.pop();
+		mapa.put(name, value.execute(symbolTable));//TODO: poner variable en el primer elemento de la cola (el ultimo que entro)
+		symbolTable.add(mapa);
 		return null;
 	}
 

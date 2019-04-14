@@ -1,6 +1,7 @@
 package co.edu.javeriana.bot;
 
 import java.util.Map;
+import java.util.Stack;
 
 public class Number implements ASTNode {
 
@@ -12,7 +13,7 @@ public class Number implements ASTNode {
 		this.value = value;
 	}
 	@Override
-	public Object execute(Map<String,Object> symbolTable) {
+	public Object execute(Stack <Map<String,Object>> symbolTable) {
 		// TODO Auto-generated method stub
 		return value;
 	}

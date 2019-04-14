@@ -1,6 +1,7 @@
 package co.edu.javeriana.bot;
 
 import java.util.Map;
+import java.util.Stack;
 
 public class BooleanManager implements ASTNode {
 	Object value;
@@ -10,7 +11,7 @@ public class BooleanManager implements ASTNode {
 		this.value=valor;
 	}
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
+	public Object execute(Stack <Map<String,Object>> symbolTable) {
 		return value;
 	}
 
