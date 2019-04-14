@@ -13,7 +13,8 @@ public class Id implements ASTNode {
 	}
 	@Override
 	public Object execute(Map<String, Object> symbolTable) {
-		return symbolTable.get(name);
+		//TODO: diferenciar variables normales de las llamadas a funciones, porque las funciones se manejan con parametros
+		return symbolTable.get(name);//TODO: recorrer todos los mapas de la cola en orden hasta que se encuentre la variable name
 	}
 
 }

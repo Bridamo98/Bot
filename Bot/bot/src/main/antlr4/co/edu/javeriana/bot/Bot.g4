@@ -180,6 +180,7 @@ program:
 {
 	List<ASTNode> body =new ArrayList<ASTNode>();
 	Map<String,Object> symbolTable = new HashMap<String, Object>();		
+	//TODO: cola de mapas
 } 
 (statement{body.add($statement.node);})*
 {
@@ -189,7 +190,38 @@ program:
 }
 ;
 
-statement returns [ASTNode node]: t1=command{$node=$t1.node;}|t2=create_var{$node=$t2.node;}|t40=assign{$node=$t40.node;}|writeln{$node=$writeln.node;};
+statement returns [ASTNode node]
+: 
+		t1=command{$node=$t1.node;}|t2=create_var{$node=$t2.node;}|t3=assign{$node=$t3.node;}|
+		t4=writeln{$node=$t4.node;}|t5=conditional{$node=$t5.node;}|t6=whileStatement{$node=$t6.node;}|
+		t7=decFunction{$node=$t7.node;}|t8=declareAndAssing{$node=$t8.node;}|t9=callFunction{$node=$t9.node;}
+;
+callFunction returns[ASTNode node]
+:
+	ID PAR_O PAR_C SEMICOLON
+;
+declareAndAssing returns [ASTNode node]
+:
+	LET ID EQUAL expression{$node=new DeclareAndAssing($ID.text,$expression.node);} SEMICOLON
+;
+decFunction returns [ASTNode node]
+:
+	{
+		List<ASTNode> body=new ArrayList<ASTNode>();
+	}
+	ID PAR_O PAR_C
+	BEGIN
+		(statement{body.add($statement.node);})*
+	END
+	{
+		$node=new DeclareAndAssignFunc($ID.text,new Function(body,$ID.text));
+		
+	}
+;
+arguments returns[ASTNode node]//despuesito
+:
+	
+;
 //$arit_expre_plus.value
 writeln  returns[ASTNode node]
 :
@@ -213,11 +245,34 @@ create_var returns [ASTNode node]
 :
 	LET ID{$node=new CreateVar($ID.text);} SEMICOLON
 ;
+compExpreUltimate returns [ASTNode node]
+:
+	t1=compExpre{$node=$t1.node;}|NOT (PAR_O?)t2=compExpre{$node=new Logical($t2.node,null,2);}(PAR_C?)
+;
+compExpre returns [ASTNode node]
+:
+	(t0=arit_expre_plus)
+		(GT(t1=arit_expre_plus){$node=new Compare(1,$t0.node,$t1.node);}|
+		LT(t2=arit_expre_plus){$node=new Compare(0,$t0.node,$t2.node);}|
+		GOET(t3=arit_expre_plus){$node=new Compare(3,$t0.node,$t3.node);}|
+		LOET (t4=arit_expre_plus){$node=new Compare(2,$t0.node,$t4.node);}|
+		COMP (t5=arit_expre_plus){$node=new Compare(4,$t0.node,$t5.node);}|
+		DIFF (t6=arit_expre_plus){$node=new Compare(5,$t0.node,$t6.node);}
+	)|(t7=bool{$node=$t7.node;})|(PAR_O)t8=logical{$node=$t8.node;}(PAR_C)
+;
 expression returns [ASTNode node]
 :
-	(arit_expre_plus){$node=$arit_expre_plus.node;}|
-	
-	(bool){$node=$bool.node;}
+	(t1=arit_expre_plus){$node=$t1.node;}|	
+	t3=logical{$node=$t3.node;}
+;
+logical returns [ASTNode node]
+:
+	(t1=logicalSub{$node=$t1.node;})(OR t2=logicalSub{$node=new Logical($node,$t2.node,1);})*
+;
+
+logicalSub returns [ASTNode node]
+:
+	(t1=compExpreUltimate{$node=$t1.node;}) (AND t3=compExpreUltimate{$node=new Logical($node,$t3.node,0);})*
 ;
 arit_expre_plus returns[ASTNode node]
 :
@@ -240,15 +295,50 @@ term returns [ASTNode node]
 		PAR_O arit_expre_plus {$node=new Term($arit_expre_plus.node,true);}PAR_C
 		
 ;
-conditional: IF PAR_O expression PAR_C
-	BRACKET_O 
-	statement*
-	BRACKET_C
-	(ELSE
-	BRACKET_O
-	statement*
-	BRACKET_C
-	)?
+conditional returns [ASTNode node]
+: 
+	{
+		List<ASTNode> ifBody =new ArrayList<ASTNode>();
+		List<ASTNode> elseBody =new ArrayList<ASTNode>();
+	}
+	IF PAR_O expression PAR_C
+	(
+		(BEGIN
+			(statement{ifBody.add($statement.node);})*
+		END
+		ELSE
+		BEGIN
+			(statement{elseBody.add($statement.node);})*
+		END
+		{
+				$node=new Conditional(ifBody,elseBody,$expression.node,true);
+		}
+		)	
+		|//-----------------------------------------------------------
+		(BEGIN
+			(statement{ifBody.add($statement.node);})*
+		END
+		{
+				$node=new Conditional(ifBody,null,$expression.node,false);
+		}
+		)	
+	)
+	
+	
+	
+;
+whileStatement returns[ASTNode node]
+:
+	{
+		List<ASTNode> body =new ArrayList<ASTNode>();
+	}
+	WHILE PAR_O expression PAR_C
+	BEGIN
+			(statement{body.add($statement.node);})*
+	END
+	{
+		$node=new WhileStatement($expression.node,body);
+	}
 ;
 
  

@@ -4,5 +4,5 @@ import java.util.Map;
 
 public interface ASTNode {
 	
-	public Object execute(Map<String,Object> symbolTable);
+	public Object execute(Map<String,Object> symbolTable);//TODO: pasar cola de mapas a todas las funciones
 }

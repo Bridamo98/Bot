@@ -15,7 +15,7 @@ public class CreateVar implements ASTNode {
 
 	@Override
 	public Object execute(Map<String, Object> symbolTable) {
-		symbolTable.put(name, new Object());
+		symbolTable.put(name, new Object());//TODO: poner variable en el primer elemento de la cola (el ultimo que entro)
 		return null;
 	}
 
