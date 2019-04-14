@@ -1,2 +1,14 @@
-let i=3;
-writeln i;
+function carajo()
+begin
+
+	writeln 777;
+	
+end
+function fun()
+begin
+	let u=666;
+	writeln u;
+	carajo();
+end
+
+fun();

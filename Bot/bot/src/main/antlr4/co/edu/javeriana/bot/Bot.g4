@@ -198,7 +198,7 @@ statement returns [ASTNode node]
 ;
 callFunction returns[ASTNode node]
 :
-	ID PAR_O PAR_C SEMICOLON
+	ID{$node=new CallFunction($ID.text);} PAR_O PAR_C SEMICOLON
 ;
 declareAndAssing returns [ASTNode node]
 :
@@ -209,7 +209,7 @@ decFunction returns [ASTNode node]
 	{
 		List<ASTNode> body=new ArrayList<ASTNode>();
 	}
-	ID PAR_O PAR_C
+	FUNCTION ID PAR_O PAR_C
 	BEGIN
 		(statement{body.add($statement.node);})*
 	END
