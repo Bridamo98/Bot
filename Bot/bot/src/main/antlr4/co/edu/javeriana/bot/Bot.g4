@@ -201,7 +201,12 @@ statement returns [ASTNode node]
 ;
 callFunction returns[ASTNode node]
 :
-	ID{$node=new CallFunction($ID.text);} PAR_O PAR_C SEMICOLON
+	{
+		ArrayList<ASTNode> parameters=new ArrayList<ASTNode>();
+	}
+	((ID PAR_O PAR_C SEMICOLON)
+	|(ID PAR_O (expression{parameters.add($expression.node);}|t1=expression{parameters.add($t1.node);}(COMMA t2=expression{parameters.add($t2.node);})+) PAR_C SEMICOLON))
+	{$node=new CallFunction($ID.text,parameters);}
 ;
 declareAndAssing returns [ASTNode node]
 :
@@ -211,14 +216,20 @@ decFunction returns [ASTNode node]
 :
 	{
 		List<ASTNode> body=new ArrayList<ASTNode>();
+		ArrayList<String> parameters=new ArrayList<String>();
 		
 	}
-	FUNCTION ID PAR_O  PAR_C
+	FUNCTION ID 
+	(	
+		(PAR_O PAR_C)|
+		(PAR_O ((LET t0=ID){parameters.add($t0.text);}|
+		(LET t1=ID){parameters.add($t1.text);}(COMMA (LET t2=ID)+{parameters.add($t2.text);})
+	) PAR_C))
 	BEGIN
 		(statement{body.add($statement.node);})*
 	END
 	{
-		$node=new DeclareAndAssignFunc($ID.text,new Function(body,$ID.text));
+		$node=new DeclareAndAssignFunc($ID.text,new Function(body,$ID.text,parameters));
 		
 	}
 ;

@@ -1,31 +1,15 @@
+function carajo2(let a)
+begin
+	let a=8;
+end
 
-let cont=666;
-if((5/2)<5)
+function carajo(let f,let y)
 begin
-	writeln cont;
-	cont=cont+1;
-	let a=9;
-	writeln a;
-	let cont=8;
-	writeln cont;
-	while(cont>0)
-	begin
-		cont=cont-1;
-		writeln cont;
-		if(cont==0)
-		begin
-			writeln a;
-		end
-	end
-	
+	writeln (f+y);
+	writeln a;	
 end
-else
-begin
-	writeln cont;
-	cont=cont+2;
-	let a=19;
-	writeln a;
-	let cont=18;
-	writeln cont;
-end
-writeln cont;
+
+let g=9;
+let u=4;
+carajo(g,u);
+carajo2(g);

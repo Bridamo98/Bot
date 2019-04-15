@@ -12,11 +12,13 @@ public class Utilidades {
 		{
 			if(symbolTable.get(i).get(llave)!=null)
 			{
+				//System.out.println("Entra");
 				return symbolTable.get(i).get(llave);
 			}
 		}
 		return null;
 	}
+
 	public static Map<String,Object> buscarMapaDondeSeUbicaElemento(String llave,Stack <Map<String,Object>> symbolTable)
 	{
 
