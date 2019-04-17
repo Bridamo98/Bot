@@ -16,8 +16,8 @@ public class Down implements ASTNode {
 	}
 	@Override
 	public Object execute(Stack <Map<String,Object>> symbolTable) {
-		((Bot)bot).down((int)number.execute(symbolTable));
-		return null;
+		
+		return ((Bot)bot).down((int)number.execute(symbolTable));
 	}
 
 }

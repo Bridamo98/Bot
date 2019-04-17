@@ -17,8 +17,8 @@ public class Up implements ASTNode {
 	}
 	@Override
 	public Object execute(Stack <Map<String,Object>> symbolTable) {
-		((Bot)bot).up((int)number.execute(symbolTable));
-		return null;
+		
+		return ((Bot)bot).up((int)number.execute(symbolTable));
 	}
 
 }

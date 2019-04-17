@@ -195,22 +195,28 @@ program:
 
 statement returns [ASTNode node]
 : 
-		t1=command{$node=$t1.node;}|t2=create_var{$node=$t2.node;}|t3=assign{$node=$t3.node;}|
+		(t1=command{$node=$t1.node;}|t2=create_var{$node=$t2.node;}|t3=assign{$node=$t3.node;}|
 		t4=writeln{$node=$t4.node;}|t5=conditional{$node=$t5.node;}|t6=whileStatement{$node=$t6.node;}|
-		t7=decFunction{$node=$t7.node;}|t8=declareAndAssing{$node=$t8.node;}|t9=callFunction{$node=$t9.node;}
+		t7=decFunction{$node=$t7.node;}|t8=declareAndAssing{$node=$t8.node;}|
+		t9=callFunction{$node=$t9.node;}|t10=read{$node=$t10.node;})SEMICOLON
+;
+read returns [ASTNode node]
+:
+	READ ID{$node=new Read($ID.text);}
 ;
 callFunction returns[ASTNode node]
 :
 	{
 		ArrayList<ASTNode> parameters=new ArrayList<ASTNode>();
 	}
-	((ID PAR_O PAR_C SEMICOLON)
-	|(ID PAR_O (expression{parameters.add($expression.node);}|t1=expression{parameters.add($t1.node);}(COMMA t2=expression{parameters.add($t2.node);})+) PAR_C SEMICOLON))
+	((ID PAR_O PAR_C )
+	|(ID PAR_O (expression{parameters.add($expression.node);}|t1=expression{parameters.add($t1.node);}(COMMA t2=expression{parameters.add($t2.node);})+) PAR_C ))
 	{$node=new CallFunction($ID.text,parameters);}
 ;
 declareAndAssing returns [ASTNode node]
 :
-	LET ID EQUAL expression{$node=new DeclareAndAssing($ID.text,$expression.node);} SEMICOLON
+	LET ID EQUAL expression{$node=new DeclareAndAssing($ID.text,$expression.node);} 
+	//|LET t2=ID EQUAL command {$node=new DeclareAndAssing($t2.text,$command.node);}
 ;
 decFunction returns [ASTNode node]
 :
@@ -239,10 +245,23 @@ arguments returns[ASTNode node]//despuesito
 ;
 //$arit_expre_plus.value
 writeln  returns[ASTNode node]
-:
-	WRITELN (arit_expre_plus{$node=new Writeln($arit_expre_plus.node);}) SEMICOLON//QUEREMOS IMPRIMIR VARIABLES--------------------
-	|WRITELN (ID{$node=new Writeln(new Id($ID.text));} )SEMICOLON
-	|WRITELN logical{$node=new Writeln($logical.node);} SEMICOLON
+:	
+	{
+		List<ASTNode> body=new ArrayList<ASTNode>();
+	}
+	//WRITELN (arit_expre_plus{$node=new Writeln($arit_expre_plus.node);}) //QUEREMOS IMPRIMIR VARIABLES--------------------
+	//WRITELN (expression{$node=new Writeln($expression.node);})
+	//|WRITELN (ID{$node=new Writeln(new Id($ID.text));} )
+	//|WRITELN logical{$node=new Writeln($logical.node);} 
+	//|WRITELN command {$node=new Writeln($command.node);}
+	WRITELN
+	(PAR_O arit_expre_plus{body.add($arit_expre_plus.node);} PAR_C | PAR_O logical{body.add($logical.node);}PAR_C|
+		string{body.add($string.node);}|ID{body.add(new Id($ID.text));})
+	(PLUS(PAR_O arit_expre_plus{body.add($arit_expre_plus.node);} PAR_C | PAR_O logical{body.add($logical.node);}PAR_C|
+		string{body.add($string.node);}|ID{body.add(new Id($ID.text));}))*
+	{
+		$node=new Writeln(body);
+	}
 		
 	//{System.out.println($arit_expre_plus.node);}
 	// 
@@ -254,17 +273,21 @@ bool returns [ASTNode node]
 
 assign returns [ASTNode node]
 :
-	t1=ID EQUAL expression{$node=new Assign($expression.node,$t1.text);} SEMICOLON
+	t1=ID EQUAL expression{$node=new Assign($expression.node,$t1.text);} 
+	//|t2= ID EQUAL command {$node=new Assign($command.node,$t2.text);}
 ;
 
 
 create_var returns [ASTNode node]
 :
-	LET ID{$node=new CreateVar($ID.text);} SEMICOLON
+	LET ID{$node=new CreateVar($ID.text);} 
 ;
 compExpreUltimate returns [ASTNode node]
 :
-	t1=compExpre{$node=$t1.node;}|NOT (PAR_O?)t2=compExpre{$node=new Logical($t2.node,null,2);}(PAR_C?)
+	t1=compExpre{$node=$t1.node;}|
+	NOT (PAR_O?)t2=compExpre{$node=new Logical($t2.node,null,2);}(PAR_C?)
+	|NOT (PAR_O?)t3=ID{$node=new Logical(new Id($t3.text),null,2);}(PAR_C?)
+	| t4=ID{$node=new Id($t4.text);}
 ;
 compExpre returns [ASTNode node]
 :
@@ -281,6 +304,12 @@ expression returns [ASTNode node]
 :
 	(t1=arit_expre_plus){$node=$t1.node;}|	
 	t3=logical{$node=$t3.node;}
+	|t2=command {$node= $t2.node;}|
+	t4=string{$node= $t4.node;}
+;
+string returns [ASTNode node]
+:
+	t1=STRING{$node=new Chain($t1.text);}
 ;
 logical returns [ASTNode node]
 :
@@ -361,28 +390,51 @@ whileStatement returns[ASTNode node]
  
 	
 //---------------------------------
-command returns [ASTNode node]: (t1=up{$node=$t1.node;} |t2=down{$node=$t2.node;}|t3=left{$node=$t3.node;}|t4=right{$node=$t4.node;});
+command returns [ASTNode node]: (t1=up{$node=$t1.node;} |t2=down{$node=$t2.node;}|t3=left{$node=$t3.node;}|t4=right{$node=$t4.node;}
+
+|t5=drop{$node=$t5.node;}|t6=look{$node=$t6.node;}|t7=pick{$node=$t7.node;}
+) ;
+
 
 up returns [ASTNode node]: UP  number
 	{
 		{$node=new Up($number.node,bot);}	
 	}
-	SEMICOLON;
+	;
 down returns [ASTNode node]: DOWN number
 	{	
 		{$node=new Down($number.node,bot);}	
 	}
-	SEMICOLON;
+	;
 left returns [ASTNode node]:LEFT number
 	{
 		{$node=new Left($number.node,bot);}	
 	}
-	SEMICOLON;
+;
 right returns [ASTNode node]: RIGHT number
 	{
 		{$node=new Right($number.node,bot);}	
 	}
-	SEMICOLON;
+	;
+	
+	
+drop returns [ASTNode node]: DROP
+{
+	{$node=new Drop(bot);}
+}
+;
+
+pick returns [ASTNode node]:PICK 
+{
+	{$node=new PICK(bot);}
+}
+;
+
+look returns [ASTNode node]: LOOK
+{
+	{$node=new Look(bot);}
+}
+;
 
 number returns [ASTNode node]:
 	t1=INTEGER {$node=new Number(Integer.parseInt($t1.text));};

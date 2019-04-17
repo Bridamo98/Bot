@@ -18,8 +18,8 @@ public class Right implements ASTNode {
 	
 	@Override
 	public Object execute(Stack <Map<String,Object>> symbolTable) {
-		((Bot)bot).right((int)number.execute(symbolTable));
-		return null;
+		//((Bot)bot).right((int)number.execute(symbolTable));
+		return (Object)((Bot)bot).right((int)number.execute(symbolTable));
 	}
 
 }

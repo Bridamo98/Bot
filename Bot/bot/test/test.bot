@@ -1,15 +1,7 @@
-function carajo2(let a)
+let a;
+read a;
+if(a=="zxc")
 begin
-	let a=8;
-end
+	writeln "mierda";
+end;
 
-function carajo(let f,let y)
-begin
-	writeln (f+y);
-	writeln a;	
-end
-
-let g=9;
-let u=4;
-carajo(g,u);
-carajo2(g);

@@ -18,8 +18,7 @@ public class Left implements ASTNode {
 	
 	@Override
 	public Object execute(Stack <Map<String,Object>> symbolTable) {
-		((Bot)bot).left((int)number.execute(symbolTable));
-		return null;
+		return ((Bot)bot).left((int)number.execute(symbolTable));
 	}
 
 }

@@ -16,10 +16,10 @@ public class DeclareAndAssing implements ASTNode {
 	
 	@Override
 	public Object execute(Stack <Map<String,Object>> symbolTable) {
-		
 		Map<String,Object> mapa= symbolTable.pop();
-		mapa.put(name, value.execute(symbolTable));//TODO: poner variable en el primer elemento de la cola (el ultimo que entro)
 		symbolTable.add(mapa);
+		mapa.put(name, value.execute(symbolTable));//TODO: poner variable en el primer elemento de la cola (el ultimo que entro)
+		
 		return null;
 	}
 
