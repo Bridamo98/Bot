@@ -299,6 +299,21 @@ compExpre returns [ASTNode node]
 		COMP (t5=arit_expre_plus){$node=new Compare(4,$t0.node,$t5.node);}|
 		DIFF (t6=arit_expre_plus){$node=new Compare(5,$t0.node,$t6.node);}
 	)|(t7=bool{$node=$t7.node;})|(PAR_O)t8=logical{$node=$t8.node;}(PAR_C)
+	|(
+	(t00=string)
+		(
+			COMP (t05=string){$node= new CompareString(4,$t00.node,$t05.node);}|
+			DIFF  (t06=string){$node= new CompareString(5,$t00.node,$t06.node);}
+		)
+	)
+	|(
+	(t000=bool)
+		(
+			COMP(t005=bool){$node=new CompareBool(4,$t000.node,$t005.node);}|
+			DIFF (t006=bool){$node=new CompareBool(5, $t000.node, $t006.node);}
+		)	
+		
+	)
 ;
 expression returns [ASTNode node]
 :
