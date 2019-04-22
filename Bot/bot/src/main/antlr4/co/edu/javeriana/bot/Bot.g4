@@ -188,7 +188,12 @@ program:
 (statement{body.add($statement.node);})*
 {
 	for(ASTNode n: body){
-		n.execute(symbolTable);
+		try{
+			n.execute(symbolTable);	
+		}catch(Exception e){
+			System.out.println("Execution error");
+		}
+		
 	}
 }
 ;
@@ -229,7 +234,7 @@ decFunction returns [ASTNode node]
 	(	
 		(PAR_O PAR_C)|
 		(PAR_O ((LET t0=ID){parameters.add($t0.text);}|
-		(LET t1=ID){parameters.add($t1.text);}(COMMA (LET t2=ID)+{parameters.add($t2.text);})
+		(LET t1=ID){parameters.add($t1.text);}(COMMA (LET t2=ID)+{parameters.add($t2.text);})+
 	) PAR_C))
 	BEGIN
 		(statement{body.add($statement.node);})*
@@ -268,7 +273,8 @@ writeln  returns[ASTNode node]
 ;
 bool returns [ASTNode node]
 :
-	BOOL {$node=new BooleanManager(Boolean.parseBoolean($BOOL.text));}
+	BOOL {$node=new BooleanManager(Boolean.parseBoolean($BOOL.text));}|
+	t2= ID{$node =new Id($t2.text);}
 ;
 
 assign returns [ASTNode node]
@@ -291,6 +297,17 @@ compExpreUltimate returns [ASTNode node]
 ;
 compExpre returns [ASTNode node]
 :
+	(
+	(t10= ID)
+		(
+			GT(t11=ID){$node=new CompareId(1,new Id($t10.text),new Id($t11.text));}	|
+			LT(t12=ID){$node=new CompareId(0,new Id($t10.text),new Id($t12.text));}|
+			GOET(t13=ID){$node=new CompareId(3,new Id($t10.text),new Id($t13.text));}|
+			LOET (t14=ID){$node=new CompareId(2,new Id($t10.text),new Id($t14.text));}|
+			COMP (t15=ID){$node=new CompareId(4,new Id($t10.text),new Id($t15.text));}|
+			DIFF (t16=ID){$node=new CompareId(5,new Id($t10.text),new Id($t16.text));}
+		)
+	)|
 	(t0=arit_expre_plus)
 		(GT(t1=arit_expre_plus){$node=new Compare(1,$t0.node,$t1.node);}|
 		LT(t2=arit_expre_plus){$node=new Compare(0,$t0.node,$t2.node);}|
@@ -314,6 +331,7 @@ compExpre returns [ASTNode node]
 		)	
 		
 	)
+	
 ;
 expression returns [ASTNode node]
 :
@@ -324,7 +342,8 @@ expression returns [ASTNode node]
 ;
 string returns [ASTNode node]
 :
-	t1=STRING{$node=new Chain($t1.text);}
+	t1=STRING{$node=new Chain($t1.text);}|
+	t2= ID{$node =new Id($t2.text);}
 ;
 logical returns [ASTNode node]
 :
