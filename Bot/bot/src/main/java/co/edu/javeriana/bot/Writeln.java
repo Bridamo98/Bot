@@ -9,9 +9,11 @@ public class Writeln implements ASTNode {
 	
 
 	List<ASTNode> body;
-	public Writeln(List<ASTNode> body) {
+	boolean line;
+	public Writeln(List<ASTNode> body, boolean line) {
 		super();
 		this.body = body;
+		this.line=line;
 	}
 	
 	@Override
@@ -20,7 +22,12 @@ public class Writeln implements ASTNode {
 		for(ASTNode node:body){
 			result=result.concat(node.execute(symbolTable).toString());
 		}
-		System.out.println(result);
+		if(line){
+			System.out.println(result);
+		}else{
+			System.out.print(result);
+		}
+		
 		return null;
 	}
 

@@ -251,22 +251,36 @@ arguments returns[ASTNode node]//despuesito
 //$arit_expre_plus.value
 writeln  returns[ASTNode node]
 :	
-	{
-		List<ASTNode> body=new ArrayList<ASTNode>();
-	}
+	
 	//WRITELN (arit_expre_plus{$node=new Writeln($arit_expre_plus.node);}) //QUEREMOS IMPRIMIR VARIABLES--------------------
 	//WRITELN (expression{$node=new Writeln($expression.node);})
 	//|WRITELN (ID{$node=new Writeln(new Id($ID.text));} )
 	//|WRITELN logical{$node=new Writeln($logical.node);} 
 	//|WRITELN command {$node=new Writeln($command.node);}
+	(
+	{
+		List<ASTNode> bodyln=new ArrayList<ASTNode>();
+	}
 	WRITELN
+	(PAR_O arit_expre_plus{bodyln.add($arit_expre_plus.node);} PAR_C | PAR_O logical{bodyln.add($logical.node);}PAR_C|
+		string{bodyln.add($string.node);}|ID{bodyln.add(new Id($ID.text));})
+	(PLUS(PAR_O arit_expre_plus{bodyln.add($arit_expre_plus.node);} PAR_C | PAR_O logical{bodyln.add($logical.node);}PAR_C|
+		string{bodyln.add($string.node);}|ID{bodyln.add(new Id($ID.text));}))*
+	{
+		$node=new Writeln(bodyln,true);
+	})|
+	(
+	{
+		List<ASTNode> body=new ArrayList<ASTNode>();
+	}
+	WRITE
 	(PAR_O arit_expre_plus{body.add($arit_expre_plus.node);} PAR_C | PAR_O logical{body.add($logical.node);}PAR_C|
 		string{body.add($string.node);}|ID{body.add(new Id($ID.text));})
 	(PLUS(PAR_O arit_expre_plus{body.add($arit_expre_plus.node);} PAR_C | PAR_O logical{body.add($logical.node);}PAR_C|
 		string{body.add($string.node);}|ID{body.add(new Id($ID.text));}))*
 	{
-		$node=new Writeln(body);
-	}
+		$node=new Writeln(body,false);
+	})
 		
 	//{System.out.println($arit_expre_plus.node);}
 	// 
@@ -492,6 +506,7 @@ ELSE: 'else';
 WHILE: 'while';
 READ: 'read';
 WRITELN: 'writeln';
+WRITE: 'write';
 PLUS: '+';
 MINUS: '-';
 MULT: '*';
